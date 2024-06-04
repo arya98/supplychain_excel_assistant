@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"name": "supplychain_excel_assistant",
+			"path": "../../supplychain_excel_assistant/supplychain_excel_assistant"
+		}
+	],
+	"settings": {}
+}
