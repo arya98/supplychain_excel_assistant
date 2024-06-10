@@ -83,6 +83,13 @@ if option == "Upload Single File":
             except ValueError as e:
                 st.error(f"An error occurred while plotting: {e}")
 
+       # if st.button("Type Query"):
+          #  query = st.text_input("Enter your query about the supply chain data:")
+             #  if query:
+               # Process query
+                #  result = process_query(query, df_cleaned) #connect to a func that arya gokul write
+
+
 elif option == "Upload Multiple Files":
     # Multiple file uploader
     uploaded_files = st.file_uploader("Choose multiple Excel files", type=["xlsx", "xls"], accept_multiple_files=True)
@@ -99,6 +106,14 @@ elif option == "Upload Multiple Files":
         if st.button("Compare Data"):
             comparison_results = compare_data(dfs)
             st.write("Comparison Results:", comparison_results)
+
+       # if st.button("Type Query"):
+        #   query = st.text_input("Enter your query about the supply chain data:")
+         #   if query:
+               # Process query
+            #   result = process_query(query, dfs) #connect to a func that arya gokul write
+
+
 
 # Run the Streamlit app
 if __name__ == "__main__":
