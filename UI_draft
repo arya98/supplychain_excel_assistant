@@ -1,0 +1,105 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Set the page configuration
+st.set_page_config(page_title="Supply Chain Excel Assistant", layout="wide")
+
+# Function to clean data
+def clean_data(df):
+    # Example data cleaning steps
+    df = df.dropna()  # Drop missing values
+    df.columns = [col.strip() for col in df.columns]  # Strip whitespace from headers
+    
+    # Convert date columns to datetime and handle invalid dates
+    for col in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[col]) or 'date' in col.lower():
+            df[col] = pd.to_datetime(df[col], errors='coerce')
+            # Filter out dates that are not within a valid range
+            df = df[(df[col].dt.year >= 1) & (df[col].dt.year <= 9999)]
+    
+    return df
+
+# Function to generate insights
+def generate_insights(df):
+    # Example insights generation
+    insights = {
+        "Total Rows": len(df),
+        "Total Columns": len(df.columns),
+        "Summary Statistics": df.describe(),
+        "Missing Values": df.isnull().sum(),
+        "Column Types": df.dtypes
+    }
+    return insights
+
+# Function to compare multiple dataframes
+def compare_data(dfs):
+    # Example comparison: checking if columns match
+    comparison_results = {}
+    columns = [set(df.columns) for df in dfs]
+    comparison_results['Common Columns'] = set.intersection(*columns)
+    comparison_results['Unique Columns'] = [set(df.columns) - comparison_results['Common Columns'] for df in dfs]
+    return comparison_results
+
+# Title of the app
+st.title("Supply Chain Excel Assistant")
+
+# Sidebar options
+st.sidebar.title("Options")
+option = st.sidebar.selectbox("Choose an action", ["Upload Single File", "Upload Multiple Files"])
+
+if option == "Upload Single File":
+    # Single file uploader
+    uploaded_file = st.file_uploader("Choose an Excel file", type=["xlsx", "xls"])
+
+    if uploaded_file:
+        # Read the uploaded file
+        df = pd.read_excel(uploaded_file)
+
+        # Display the dataframe
+        st.write("Dataframe:", df)
+
+        # Initialize df_cleaned
+        df_cleaned = df
+
+        # Clean data
+        if st.button("Clean Data"):
+            df_cleaned = clean_data(df)
+            st.write("Cleaned Dataframe:", df_cleaned)
+
+        # Generate and display insights
+        if st.button("Generate Insights"):
+            insights = generate_insights(df_cleaned)
+            for key, value in insights.items():
+                st.write(f"**{key}:**", value)
+
+        # Plot example
+        if st.button("Show Plot"):
+            st.write("Example Plot")
+            fig, ax = plt.subplots()
+            try:
+                df_cleaned.plot(ax=ax)
+                st.pyplot(fig)
+            except ValueError as e:
+                st.error(f"An error occurred while plotting: {e}")
+
+elif option == "Upload Multiple Files":
+    # Multiple file uploader
+    uploaded_files = st.file_uploader("Choose multiple Excel files", type=["xlsx", "xls"], accept_multiple_files=True)
+
+    if uploaded_files:
+        # Read the uploaded files
+        dfs = [pd.read_excel(file) for file in uploaded_files]
+        
+        # Display dataframes
+        for i, df in enumerate(dfs):
+            st.write(f"Dataframe {i+1}:", df)
+        
+        # Compare dataframes
+        if st.button("Compare Data"):
+            comparison_results = compare_data(dfs)
+            st.write("Comparison Results:", comparison_results)
+
+# Run the Streamlit app
+if __name__ == "__main__":
+    st.write("Welcome to the Supply Chain Excel Assistant!")
