@@ -1,0 +1,42 @@
+# Chart plotting based on query
+def generate_visualization(query):
+    query_type = classify_query(query) #NLP func
+    data = fetch_data_based_on_query(query) # NLP func
+
+    if query_type == "comparison":
+        return generate_bar_chart(data)
+    elif query_type == "trend":
+        return generate_line_chart(data)
+    elif query_type == "distribution":
+        return generate_histogram(data)
+    elif query_type == "proportion":
+        return generate_pie_chart(data)
+
+
+
+def generate_bar_chart(data):
+    plt.bar(data['Category'], data['Values'])
+    plt.xlabel('Category')
+    plt.ylabel('Values')
+    plt.title('Comparison of Values by Category')
+    plt.show()
+
+def generate_line_chart(data):
+    dates = pd.date_range(start='1/1/2020', periods=len(data))
+    plt.plot(dates, data['Values'])
+    plt.xlabel('Date')
+    plt.ylabel('Values')
+    plt.title('Trend of Values Over Time')
+    plt.show()
+
+def generate_histogram(data):
+    plt.hist(data['Values'], bins=5)
+    plt.xlabel('Values')
+    plt.ylabel('Frequency')
+    plt.title('Distribution of Values')
+    plt.show()
+
+def generate_pie_chart(data):
+    plt.pie(data['Values'], labels=data['Category'], autopct='%1.1f%%')
+    plt.title('Proportion of Values by Category')
+    plt.show()
