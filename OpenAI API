@@ -1,0 +1,38 @@
+import openai
+import pandas as pd
+
+# Set your OpenAI API key
+openai.api_key = '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'
+
+# Function to read and analyze an Excel sheet
+def read_and_analyze_excel(file_path, prompt_text):
+    # Read the Excel file
+    df = pd.read_excel(file_path)
+
+    # Convert the DataFrame to a string for API input
+    data_str = df.to_string()
+
+    # Define a prompt to guide the analysis
+    prompt = f"Analyze the following supply chain data:\n\n{data_str}\n\n{prompt_text}"
+
+    # Call the OpenAI API
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",  # Use a suitable chat model
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+
+    # Extract the response text
+    analysis = response['choices'][0]['message']['content'].strip()
+
+    return analysis
+
+# Usage example
+file_path = "/content/supply_chain_data.xlsx"  # Path to your Excel file
+prompt_text = "Please provide insights and recommendations based on the data." # Customize your prompt
+
+output = read_and_analyze_excel(file_path, prompt_text)
+print(output)
+
