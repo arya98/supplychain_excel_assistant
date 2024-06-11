@@ -1,0 +1,60 @@
+!pip install openai==0.28
+!pip install langchain
+!pip install langchain_community
+import pandas as pd
+import openai
+import langchain
+from langchain import LLMChain
+from langchain.prompts import PromptTemplate
+from langchain.llms import OpenAI as LangChainOpenAI # Import OpenAI from langchain_community
+import os
+
+# Initialize OpenAI with your API key
+os.environ['OPENAI_API_KEY'] = 'sk-proj-eqbZIrxFIiejv0wdMNsAT3BlbkFJsbLQgrPAYyiltTKMi3AV'
+
+# Define a prompt template
+prompt_template = PromptTemplate(
+    input_variables=["user_input", "file_data"],
+    template="User input: {user_input}\nExcel Data:\n{file_data}\nProcess this information."
+)
+
+# Initialize the language model
+llm = LangChainOpenAI(model_name="gpt-4o")
+
+# Define the LangChain instance
+chain = LLMChain(prompt=prompt_template, llm=llm)
+
+def read_excel_file(file_path):
+    # Read the Excel file
+    df = pd.read_excel(file_path)
+    return df
+
+def main():
+    # Get user input
+    user_input = input("Please enter your input: ")
+
+    # Get the Excel file path from the user
+    file_path = input("Please provide the path to your Excel file: ")
+
+    # Read the Excel file
+    df = read_excel_file(file_path)
+
+    # Convert DataFrame to a string for the prompt
+    file_data = df.to_string()
+
+    # Create the input dictionary for the chain
+    chain_input = {
+        "user_input": user_input,
+        "file_data": file_data
+    }
+
+    # Run the chain with the input data
+    result = chain.run(chain_input)
+
+    # Output the result
+    print("Result:")
+    print(result)
+
+if __name__ == "__main__":
+    main()
+
